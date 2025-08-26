@@ -1,4 +1,4 @@
-# ChromeDino# Crear entorno virtual
+# Crear entorno virtual
 python -m venv venv
 
 # Activar entorno
