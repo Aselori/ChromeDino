@@ -1,9 +1,12 @@
 import pygame
+import random
 from core.config import WIDTH, GROUND_Y
+from core.assets import asset_manager
 
 class Ground:
     def __init__(self):
         self.x = 0
+        self.background = asset_manager.get_background()
 
     def update(self, speed, dt):
         self.x -= speed * dt
@@ -11,12 +14,7 @@ class Ground:
             self.x += WIDTH
 
     def draw(self, surface):
-        y = GROUND_Y - 14
-        # Dibuja el suelo dos veces para cubrir el ancho completo y evitar "render lento"
+        # Dibuja el fondo dos veces para cubrir el ancho completo
         for offset in [0, WIDTH]:
             base_x = self.x + offset
-            pygame.draw.line(surface, (120,120,120), (base_x, y), (base_x + WIDTH, y), 4)
-            for dx in range(0, WIDTH, 24):
-                pygame.draw.rect(surface, (80,80,80), (base_x+dx, y+8, 12, 3))
-            for dx in range(0, WIDTH, 40):
-                pygame.draw.circle(surface, (160,160,160), (int(base_x+dx+8), y+16), 3)
+            surface.blit(self.background, (base_x, GROUND_Y - self.background.get_height()))

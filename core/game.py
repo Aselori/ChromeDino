@@ -7,7 +7,392 @@ from entities.dino import Dino
 from entities.ground import Ground
 from entities.cloud import Cloud
 from systems.scoring import HiScore, Telemetry
+from systems.daynight import DayNightCycle
 from core.config import WIDTH, HEIGHT, GROUND_Y
+
+class PixelFont:
+    """Sistema de fuentes pixel art para estilo retro"""
+    
+    def __init__(self, size=8):
+        self.size = size
+        self.pixel_size = max(1, size // 8)  # Tamaño de cada píxel de la fuente
+        
+        # Patrones de números en pixel art (0-9)
+        self.number_patterns = {
+            '0': [
+                " 1111 ",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                " 1111 "
+            ],
+            '1': [
+                "  11  ",
+                " 111  ",
+                "  11  ",
+                "  11  ",
+                "  11  ",
+                "  11  ",
+                " 1111 "
+            ],
+            '2': [
+                " 1111 ",
+                "11  11",
+                "    11",
+                "   11 ",
+                "  11  ",
+                " 11   ",
+                "111111"
+            ],
+            '3': [
+                " 1111 ",
+                "11  11",
+                "    11",
+                "  111 ",
+                "    11",
+                "11  11",
+                " 1111 "
+            ],
+            '4': [
+                "   11 ",
+                "  111 ",
+                " 1111 ",
+                "11 11 ",
+                "111111",
+                "   11 ",
+                "   11 "
+            ],
+            '5': [
+                "111111",
+                "11    ",
+                "11111 ",
+                "    11",
+                "    11",
+                "11  11",
+                " 1111 "
+            ],
+            '6': [
+                " 1111 ",
+                "11  11",
+                "11    ",
+                "11111 ",
+                "11  11",
+                "11  11",
+                " 1111 "
+            ],
+            '7': [
+                "111111",
+                "    11",
+                "   11 ",
+                "  11  ",
+                " 11   ",
+                " 11   ",
+                " 11   "
+            ],
+            '8': [
+                " 1111 ",
+                "11  11",
+                "11  11",
+                " 1111 ",
+                "11  11",
+                "11  11",
+                " 1111 "
+            ],
+            '9': [
+                " 1111 ",
+                "11  11",
+                "11  11",
+                " 11111",
+                "    11",
+                "11  11",
+                " 1111 "
+            ]
+        }
+        
+        # Patrones de letras básicas
+        self.letter_patterns = {
+            'A': [
+                " 1111 ",
+                "11  11",
+                "11  11",
+                "111111",
+                "11  11",
+                "11  11",
+                "11  11"
+            ],
+            'B': [
+                "11111 ",
+                "11  11",
+                "11  11",
+                "11111 ",
+                "11  11",
+                "11  11",
+                "11111 "
+            ],
+            'C': [
+                " 1111 ",
+                "11  11",
+                "11    ",
+                "11    ",
+                "11    ",
+                "11  11",
+                " 1111 "
+            ],
+            'D': [
+                "11111 ",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11111 "
+            ],
+            'E': [
+                "111111",
+                "11    ",
+                "11    ",
+                "11111 ",
+                "11    ",
+                "11    ",
+                "111111"
+            ],
+            'F': [
+                "111111",
+                "11    ",
+                "11    ",
+                "11111 ",
+                "11    ",
+                "11    ",
+                "11    "
+            ],
+            'G': [
+                " 1111 ",
+                "11  11",
+                "11    ",
+                "11 111",
+                "11  11",
+                "11  11",
+                " 1111 "
+            ],
+            'H': [
+                "11  11",
+                "11  11",
+                "11  11",
+                "111111",
+                "11  11",
+                "11  11",
+                "11  11"
+            ],
+            'I': [
+                " 1111 ",
+                "  11  ",
+                "  11  ",
+                "  11  ",
+                "  11  ",
+                "  11  ",
+                " 1111 "
+            ],
+            'J': [
+                "  1111",
+                "    11",
+                "    11",
+                "    11",
+                "11  11",
+                "11  11",
+                " 1111 "
+            ],
+            'K': [
+                "11  11",
+                "11 11 ",
+                "1111  ",
+                "111   ",
+                "1111  ",
+                "11 11 ",
+                "11  11"
+            ],
+            'L': [
+                "11    ",
+                "11    ",
+                "11    ",
+                "11    ",
+                "11    ",
+                "11    ",
+                "111111"
+            ],
+            'M': [
+                "11  11",
+                "111 111",
+                "1111111",
+                "11 1 11",
+                "11  11",
+                "11  11",
+                "11  11"
+            ],
+            'N': [
+                "11  11",
+                "111 11",
+                "111111",
+                "111111",
+                "11 111",
+                "11  11",
+                "11  11"
+            ],
+            'O': [
+                " 1111 ",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                " 1111 "
+            ],
+            'P': [
+                "11111 ",
+                "11  11",
+                "11  11",
+                "11111 ",
+                "11    ",
+                "11    ",
+                "11    "
+            ],
+            'Q': [
+                " 1111 ",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11 111",
+                "11 11 ",
+                " 11111"
+            ],
+            'R': [
+                "11111 ",
+                "11  11",
+                "11  11",
+                "11111 ",
+                "11 11 ",
+                "11  11",
+                "11  11"
+            ],
+            'S': [
+                " 1111 ",
+                "11  11",
+                "11    ",
+                " 1111 ",
+                "    11",
+                "11  11",
+                " 1111 "
+            ],
+            'T': [
+                "111111",
+                "  11  ",
+                "  11  ",
+                "  11  ",
+                "  11  ",
+                "  11  ",
+                "  11  "
+            ],
+            'U': [
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                " 1111 "
+            ],
+            'V': [
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                "11  11",
+                " 11 11 ",
+                "  11  "
+            ],
+            'W': [
+                "11  11",
+                "11  11",
+                "11  11",
+                "11 1 11",
+                "1111111",
+                "111 111",
+                "11  11"
+            ],
+            'X': [
+                "11  11",
+                "11  11",
+                " 11 11 ",
+                "  11  ",
+                " 11 11 ",
+                "11  11",
+                "11  11"
+            ],
+            'Y': [
+                "11  11",
+                "11  11",
+                " 11 11 ",
+                "  11  ",
+                "  11  ",
+                "  11  ",
+                "  11  "
+            ],
+            'Z': [
+                "111111",
+                "    11",
+                "   11 ",
+                "  11  ",
+                " 11   ",
+                "11    ",
+                "111111"
+            ],
+            ' ': [
+                "      ",
+                "      ",
+                "      ",
+                "      ",
+                "      ",
+                "      ",
+                "      "
+            ]
+        }
+    
+    def render(self, text, color):
+        """Renderiza texto en estilo pixel art"""
+        text = text.upper()
+        char_width = 6 * self.pixel_size
+        char_height = 7 * self.pixel_size
+        total_width = len(text) * char_width
+        total_height = char_height
+        
+        # Crear superficie para el texto
+        surface = pygame.Surface((total_width, total_height), pygame.SRCALPHA)
+        
+        for i, char in enumerate(text):
+            if char in self.number_patterns:
+                pattern = self.number_patterns[char]
+            elif char in self.letter_patterns:
+                pattern = self.letter_patterns[char]
+            else:
+                pattern = self.letter_patterns[' ']  # Espacio para caracteres no reconocidos
+            
+            # Dibujar cada carácter
+            for row_idx, row in enumerate(pattern):
+                for col_idx, pixel in enumerate(row):
+                    if pixel == "1":
+                        pygame.draw.rect(
+                            surface,
+                            color,
+                            (
+                                i * char_width + col_idx * self.pixel_size,
+                                row_idx * self.pixel_size,
+                                self.pixel_size,
+                                self.pixel_size
+                            )
+                        )
+        
+        return surface
 
 class Game:
     def __init__(self, seed=None):
@@ -40,6 +425,12 @@ class Game:
         self.last_score = 0
         self.adjust_history = []
         self.show_start = True  # Estado de pantalla de inicio
+        self.day_night_cycle = DayNightCycle()
+        
+        # Inicializar fuentes pixel art
+        self.pixel_font_large = PixelFont(24)  # Para títulos
+        self.pixel_font_medium = PixelFont(18)  # Para texto normal
+        self.pixel_font_small = PixelFont(14)   # Para texto pequeño
 
     def reset(self):
         self.frames = 0
@@ -90,6 +481,12 @@ class Game:
                 elif self.difficulty == "media":
                     self.difficulty = "baja"
         self.acceleration = accel_map[self.difficulty]
+        self.day_night_cycle = DayNightCycle()
+        
+        # Reinicializar fuentes pixel art
+        self.pixel_font_large = PixelFont(24)
+        self.pixel_font_medium = PixelFont(18)
+        self.pixel_font_small = PixelFont(14)
 
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -111,10 +508,9 @@ class Game:
         self.ground.update(self.speed, dt)
         for c in self.clouds:
             c.update(dt)
-        if self.score % 1000 < 500:
-            self.bg_color = (245, 245, 245)
-        else:
-            self.bg_color = (40, 40, 60)
+        # Actualiza el ciclo día/noche con transiciones graduales
+        self.day_night_cycle.update(self.score)
+        self.bg_color = self.day_night_cycle.get_bg_color()
         self.spawn_timer -= dt_ms
         if self.spawn_timer <= 0:
             self.obstacles.append(Obstacle())
@@ -142,41 +538,44 @@ class Game:
         self.dino.draw(screen)
         for ob in self.obstacles:
             ob.draw(screen)
-        font = pygame.font.SysFont("Arial", 32, bold=True)
-        score_surf = font.render(f"{self.score:05d}", True, (60, 60, 60) if self.score % 1000 < 500 else (220,220,220))
-        screen.blit(score_surf, (WIDTH-120, 20))
-        hi_font = pygame.font.SysFont("Arial", 20)
-        hi_surf = hi_font.render(f"HI {self.hiscores[self.difficulty]:05d} ({self.difficulty.capitalize()})", True, (120, 120, 120))
+        
+        # Renderizar score con fuente pixel art
+        score_color = (60, 60, 60) if not self.day_night_cycle.is_night else (220, 220, 220)
+        score_surf = self.pixel_font_medium.render(f"{self.score:05d}", score_color)
+        screen.blit(score_surf, (WIDTH-150, 20))
+        
+        # Renderizar high score con fuente pixel art
+        hi_color = (120, 120, 120) if not self.day_night_cycle.is_night else (180, 180, 180)
+        hi_text = f"HI {self.hiscores[self.difficulty]:05d} ({self.difficulty.upper()})"
+        hi_surf = self.pixel_font_small.render(hi_text, hi_color)
         screen.blit(hi_surf, (20, 20))
         if self.show_start:
-            title_font = pygame.font.SysFont("Arial", 40, bold=True)
-            title_surf = title_font.render("CHROME DINO", True, (60, 60, 60))
-            screen.blit(title_surf, (WIDTH//2-150, HEIGHT//2-60))
-            instr_font = pygame.font.SysFont("Arial", 24)
-            instr_surf = instr_font.render("Presiona SPACE para iniciar", True, (80, 80, 80))
-            screen.blit(instr_surf, (WIDTH//2-150, HEIGHT//2))
-            # Muestra el valor de aceleración actual (auto-ajuste)
-            accel_font = pygame.font.SysFont("Arial", 20)
-            accel_surf = accel_font.render(
-                f"Dificultad: {self.difficulty.capitalize()}  |  Aceleración: {self.acceleration:.4f}",
-                True, (40, 120, 40)
-            )
-            screen.blit(accel_surf, (WIDTH//2-150, HEIGHT//2+40))
-            # Muestra historial de ajuste para depuración visual
+            # Título principal con fuente pixel art
+            title_surf = self.pixel_font_large.render("CHROME DINO", (60, 60, 60))
+            screen.blit(title_surf, (WIDTH//2-200, HEIGHT//2-80))
+            
+            # Instrucciones con fuente pixel art
+            instr_surf = self.pixel_font_medium.render("PRESIONA SPACE PARA INICIAR", (80, 80, 80))
+            screen.blit(instr_surf, (WIDTH//2-200, HEIGHT//2-20))
+            
+            # Información de dificultad con fuente pixel art
+            accel_text = f"DIFICULTAD: {self.difficulty.upper()} | ACELERACION: {self.acceleration:.4f}"
+            accel_surf = self.pixel_font_small.render(accel_text, (40, 120, 40))
+            screen.blit(accel_surf, (WIDTH//2-200, HEIGHT//2+20))
+            
+            # Historial de ajuste con fuente pixel art
             if self.adjust_history:
-                hist_font = pygame.font.SysFont("Arial", 16)
-                hist_surf = hist_font.render(
-                    "Historial ajuste: " + ", ".join(f"{r:.2f}" for r in self.adjust_history),
-                    True, (100, 100, 100)
-                )
-                screen.blit(hist_surf, (WIDTH//2-150, HEIGHT//2+70))
+                hist_text = "HISTORIAL AJUSTE: " + ", ".join(f"{r:.2f}" for r in self.adjust_history)
+                hist_surf = self.pixel_font_small.render(hist_text, (100, 100, 100))
+                screen.blit(hist_surf, (WIDTH//2-200, HEIGHT//2+50))
         elif self.game_over:
-            over_font = pygame.font.SysFont("Arial", 36, bold=True)
-            over_surf = over_font.render("GAME OVER", True, (200, 0, 0))
-            screen.blit(over_surf, (WIDTH//2-120, HEIGHT//2-40))
-            restart_font = pygame.font.SysFont("Arial", 20)
-            restart_surf = restart_font.render("Presiona SPACE para reiniciar", True, (80, 80, 80))
-            screen.blit(restart_surf, (WIDTH//2-120, HEIGHT//2+10))
+            # Game Over con fuente pixel art
+            over_surf = self.pixel_font_large.render("GAME OVER", (200, 0, 0))
+            screen.blit(over_surf, (WIDTH//2-180, HEIGHT//2-60))
+            
+            # Instrucción de reinicio con fuente pixel art
+            restart_surf = self.pixel_font_medium.render("PRESIONA SPACE PARA REINICIAR", (80, 80, 80))
+            screen.blit(restart_surf, (WIDTH//2-180, HEIGHT//2))
 
     def end_run(self):
         ttf = self.frames / 60.0
