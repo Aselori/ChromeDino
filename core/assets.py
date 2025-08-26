@@ -41,6 +41,8 @@ BIRD = [
 # Cargar otros elementos
 CLOUD = pygame.image.load(os.path.join("assets", "Otros", "Cloud.png"))
 BG = pygame.image.load(os.path.join("assets", "Otros", "Track.png"))
+GAME_OVER = pygame.image.load(os.path.join("assets", "Otros", "GameOver.png"))
+RESET = pygame.image.load(os.path.join("assets", "Otros", "Reset.png"))
 
 class AssetManager:
     """Gestor centralizado de assets del juego"""
@@ -54,6 +56,8 @@ class AssetManager:
         self.bird = BIRD
         self.cloud = CLOUD
         self.background = BG
+        self.game_over = GAME_OVER
+        self.reset = RESET
         
         # Escalar sprites si es necesario para el tamaño del juego
         self.scale_assets()
@@ -94,6 +98,14 @@ class AssetManager:
         # Escalar fondo
         self.background = pygame.transform.scale(self.background,
             (SCREEN_WIDTH, int(self.background.get_height() * scale_factor)))
+        
+        # Escalar GameOver y Reset
+        self.game_over = pygame.transform.scale(self.game_over,
+            (int(self.game_over.get_width() * scale_factor), 
+             int(self.game_over.get_height() * scale_factor)))
+        self.reset = pygame.transform.scale(self.reset,
+            (int(self.reset.get_width() * scale_factor), 
+             int(self.reset.get_height() * scale_factor)))
     
     def get_dino_running(self, frame):
         """Obtiene el sprite de correr del dinosaurio según el frame"""
@@ -126,6 +138,14 @@ class AssetManager:
     def get_background(self):
         """Obtiene el sprite del fondo"""
         return self.background
+    
+    def get_game_over(self):
+        """Obtiene el sprite de Game Over"""
+        return self.game_over
+    
+    def get_reset(self):
+        """Obtiene el sprite de Reset"""
+        return self.reset
 
 # Instancia global del gestor de assets
 asset_manager = AssetManager()

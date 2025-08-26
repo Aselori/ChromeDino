@@ -9,6 +9,7 @@ from entities.cloud import Cloud
 from systems.scoring import HiScore, Telemetry
 from systems.daynight import DayNightCycle
 from core.config import WIDTH, HEIGHT, GROUND_Y
+from core.assets import asset_manager
 
 class PixelFont:
     """Sistema de fuentes pixel art para estilo retro"""
@@ -496,6 +497,26 @@ class Game:
                 self.dino.update(pygame.key.get_pressed())
             elif self.game_over and event.key in (pygame.K_SPACE, pygame.K_UP):
                 self.reset()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            # Detectar clic en el botón Reset cuando el juego está en game over
+            if self.game_over and event.button == 1:  # Clic izquierdo
+                mouse_pos = pygame.mouse.get_pos()
+                if self.is_click_on_reset_button(mouse_pos):
+                    self.reset()
+
+    def is_click_on_reset_button(self, mouse_pos):
+        """Verifica si el clic del mouse está sobre el botón Reset"""
+        if not self.game_over:
+            return False
+        
+        reset_sprite = asset_manager.get_reset()
+        reset_x = (WIDTH - reset_sprite.get_width()) // 2
+        reset_y = HEIGHT // 2
+        
+        # Crear rectángulo del botón Reset
+        reset_rect = pygame.Rect(reset_x, reset_y, reset_sprite.get_width(), reset_sprite.get_height())
+        
+        return reset_rect.collidepoint(mouse_pos)
 
     def update(self, dt, dt_ms):
         if self.show_start or self.game_over:
@@ -569,13 +590,19 @@ class Game:
                 hist_surf = self.pixel_font_small.render(hist_text, (100, 100, 100))
                 screen.blit(hist_surf, (WIDTH//2-200, HEIGHT//2+50))
         elif self.game_over:
-            # Game Over con fuente pixel art
-            over_surf = self.pixel_font_large.render("GAME OVER", (200, 0, 0))
-            screen.blit(over_surf, (WIDTH//2-180, HEIGHT//2-60))
+            # Game Over usando asset
+            game_over_sprite = asset_manager.get_game_over()
+            reset_sprite = asset_manager.get_reset()
             
-            # Instrucción de reinicio con fuente pixel art
-            restart_surf = self.pixel_font_medium.render("PRESIONA SPACE PARA REINICIAR", (80, 80, 80))
-            screen.blit(restart_surf, (WIDTH//2-180, HEIGHT//2))
+            # Centrar el sprite de Game Over
+            game_over_x = (WIDTH - game_over_sprite.get_width()) // 2
+            game_over_y = HEIGHT // 2 - 60
+            screen.blit(game_over_sprite, (game_over_x, game_over_y))
+            
+            # Centrar el sprite de Reset
+            reset_x = (WIDTH - reset_sprite.get_width()) // 2
+            reset_y = HEIGHT // 2
+            screen.blit(reset_sprite, (reset_x, reset_y))
 
     def end_run(self):
         ttf = self.frames / 60.0
