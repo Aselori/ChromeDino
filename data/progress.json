@@ -1,0 +1,9 @@
+{
+  "ema_ttf": 68.2,
+  "rating": 0.7,
+  "k_pid_p": 0.10,
+  "k_pid_i": 0.02,
+  "k_pid_d": 0.02,
+  "i_accum": 1.4,
+  "last_err": 0.05
+}
