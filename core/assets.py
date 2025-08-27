@@ -46,8 +46,6 @@ BIRD = [
 # Cargar otros elementos
 CLOUD = [
     pygame.image.load(os.path.join("assets", "Otros", "Cloud.png")),
-    pygame.image.load(os.path.join("assets", "Otros", "Cloud2.png")),
-    pygame.image.load(os.path.join("assets", "Otros", "Cloud3.png"))
 ]
 BG = pygame.image.load(os.path.join("assets", "Otros", "Track.png"))
 GAME_OVER = pygame.image.load(os.path.join("assets", "Otros", "GameOver.png"))
@@ -100,9 +98,9 @@ class AssetManager:
             for img in self.bird]
         
         # Escalar nube
-        self.cloud = [pygame.transform.scale(img,
-            (int(img.get_width() * scale_factor), int(img.get_height() * scale_factor)))
-            for img in self.cloud]
+        self.cloud = pygame.transform.scale(self.cloud,
+            (int(self.cloud.get_width() * scale_factor), 
+             int(self.cloud.get_height() * scale_factor)))
         
         # Escalar fondo
         self.background = pygame.transform.scale(self.background,
