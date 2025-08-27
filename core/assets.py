@@ -12,12 +12,17 @@ SCREEN_WIDTH = 800
 # Cargar sprites del dinosaurio
 RUNNING = [
     pygame.image.load(os.path.join("assets", "Dino", "DinoRun1.png")),
-    pygame.image.load(os.path.join("assets", "Dino", "DinoRun2.png"))
+    pygame.image.load(os.path.join("assets", "Dino", "DinoRun2.png")),
+    pygame.image.load(os.path.join("assets", "Dino", "DinoRun3.png")),
+    pygame.image.load(os.path.join("assets", "Dino", "DinoRun4.png"))
 ]
-JUMPING = pygame.image.load(os.path.join("assets", "Dino", "DinoJump.png"))
+JUMPING = pygame.image.load(os.path.join("assets", "Dino", "DinoJump1.png"))
+FALLING = pygame.image.load(os.path.join("assets", "Dino", "DinoJump2.png"))
 DUCKING = [
     pygame.image.load(os.path.join("assets", "Dino", "DinoDuck1.png")),
-    pygame.image.load(os.path.join("assets", "Dino", "DinoDuck2.png"))
+    pygame.image.load(os.path.join("assets", "Dino", "DinoDuck2.png")),
+    pygame.image.load(os.path.join("assets", "Dino", "DinoDuck3.png")),
+    pygame.image.load(os.path.join("assets", "Dino", "DinoDuck4.png"))
 ]
 
 # Cargar sprites de cactus
@@ -39,7 +44,11 @@ BIRD = [
 ]
 
 # Cargar otros elementos
-CLOUD = pygame.image.load(os.path.join("assets", "Otros", "Cloud.png"))
+CLOUD = [
+    pygame.image.load(os.path.join("assets", "Otros", "Cloud.png")),
+    pygame.image.load(os.path.join("assets", "Otros", "Cloud2.png")),
+    pygame.image.load(os.path.join("assets", "Otros", "Cloud3.png"))
+]
 BG = pygame.image.load(os.path.join("assets", "Otros", "Track.png"))
 GAME_OVER = pygame.image.load(os.path.join("assets", "Otros", "GameOver.png"))
 RESET = pygame.image.load(os.path.join("assets", "Otros", "Reset.png"))
@@ -91,9 +100,9 @@ class AssetManager:
             for img in self.bird]
         
         # Escalar nube
-        self.cloud = pygame.transform.scale(self.cloud,
-            (int(self.cloud.get_width() * scale_factor), 
-             int(self.cloud.get_height() * scale_factor)))
+        self.cloud = [pygame.transform.scale(img,
+            (int(img.get_width() * scale_factor), int(img.get_height() * scale_factor)))
+            for img in self.cloud]
         
         # Escalar fondo
         self.background = pygame.transform.scale(self.background,
