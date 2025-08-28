@@ -44,7 +44,7 @@ BIRD = [
 ]
 
 # Cargar otros elementos
-CLOUD = pygame.image.load(os.path.join("assets", "Otros", "Cloud.png")),
+CLOUD = pygame.image.load(os.path.join("assets", "Otros", "Cloud.png"))
 BG = pygame.image.load(os.path.join("assets", "Otros", "Track.png"))
 GAME_OVER = pygame.image.load(os.path.join("assets", "Otros", "GameOver.png"))
 RESET = pygame.image.load(os.path.join("assets", "Otros", "Reset.png"))
