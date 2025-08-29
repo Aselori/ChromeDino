@@ -1,4 +1,4 @@
-#Tarea
+# Tarea
 Todos los archivos py, junto a los commits y todos los cambios se pueden encontrar aqui
 
 # Crear entorno virtual
